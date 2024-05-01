@@ -34,6 +34,13 @@ const authReducer = (state = INIT_STATE.user, action) => {
                 user: action.payload
             }
 
+        case "UPDATE_USER_POINT":
+            console.log("userrrrrrrrrrrrrr: ", action.payload);
+            return {
+                ...state,
+                user: action.payload
+            }
+
         case "UPDATE_PAYMENT_METHOD":
             return {
                 ...state,

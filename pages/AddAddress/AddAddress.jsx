@@ -35,6 +35,8 @@ const AddAddress = ({ navigation }) => {
                 `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyB9jG7ROCL115gTV3Z1boznnkxN4lTM-wc&input=${query}`
             )
             .then((response) => {
+                setSuggestions(response.data.predictions);
+
                 if (response.data.predictions.length !== 0) {
                     setSuggestions(response.data.predictions);
                 } else {
@@ -90,23 +92,24 @@ const AddAddress = ({ navigation }) => {
 
     const handleSavingAddrress = async () => {
 
-        if((inputAdress !== "" && addressType !== "")){
-            const payload = {
-                userId: user._id,
-                address: {
-                    addressNo: user.address.length + 1,
-                    place: inputAdress,
-                    type: addressType,
-                    phoneNumber
-                },
-            };
-    
-            addAddress(payload)
-            .then(newUser => {
+   
+        const payload = {
+            userId: user._id,
+            address: {
+                addressNo: user.address.length + 1,
+                place: inputAdress,
+                type: addressType,
+                phoneNumber
+            },
+        };
+
+        addAddress(payload)
+            .then( newUser => {
                 dispatch(updateAddress(newUser.data));
                 navigation.goBack()
             })
-        }
+            .catch(error => console.log(error))
+        
     };
 
     return (

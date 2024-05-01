@@ -42,6 +42,7 @@ import Shipper from "./pages/Shipper/Shipper";
 
 import { Alert } from 'react-native';
 import FoodReview from "./pages/FoodReview/FoodReview";
+import RestaurantInfo from "./pages/RestuarantInfo/RestaurantInfo";
 const showAlert = (id) => {
     Alert.alert(
       "Alert Title",
@@ -163,6 +164,11 @@ export default function Index() {
                         <Stack.Screen
                             name="FoodReview"
                             component={FoodReview}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="RestaurantInfo"
+                            component={RestaurantInfo}
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen

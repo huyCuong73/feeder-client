@@ -14,6 +14,7 @@ import backward from "../../assets/backward.png";
 import minusBox from "../../assets/minus-box.png";
 import { formatDate, formatVND } from "../../helper";
 import { Icon } from "react-native-elements";
+import StarRating from "../../components/StarRating/StarRating";
 
 const Food = ({ navigation, route }) => {
     const food = route.params.food;
@@ -29,7 +30,7 @@ const Food = ({ navigation, route }) => {
     };
 
     const averageRating = calculateAverageRating(food.feedback);
-    console.log(averageRating);
+
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -61,22 +62,7 @@ const Food = ({ navigation, route }) => {
                 <Text style = {{fontSize: 28, fontWeight: 600}}>{food.name}</Text>
             </View>
             <View style={{marginHorizontal: 20, display: "flex", flexDirection: "row"}}>
-                {[1, 2, 3, 4, 5].map((index) => {
-                        return (
-                            <Pressable
-                                key={index}
-                                onPress={() => handleRating(index)}
-                            >
-                                <Icon
-                                    name={index <= averageRating ? "star" : "star"}
-                                    size={26}
-                                    color={
-                                        index <= averageRating ? "#FFD700" : "#B0C4DE"
-                                    }
-                                />
-                            </Pressable>
-                        );
-                    })}
+                <StarRating averageRating={averageRating} size={26}/>
             </View>
 
             <View
@@ -117,7 +103,7 @@ const Food = ({ navigation, route }) => {
 
             <ScrollView>
                 <View style={{ margin: 20 }}>
-                    {food.feedback.map((feedback, i ) => (
+                    {food.feedback.reverse().map((feedback, i ) => (
                         <View key = {i} style={{ marginBottom: 24 , borderBottomWidth: 2, borderBottomColor: "#d2d2d2"}}>
                             <Text style={{ fontSize: 20 }}>
                                 {feedback.userId.username}
@@ -130,24 +116,7 @@ const Food = ({ navigation, route }) => {
                                     marginBottom: 10,
                                 }}
                             >
-                                {[1, 2, 3, 4, 5].map((index) => {
-                                    return (
-                                        <Icon
-                                        key = {index}
-                                            name={
-                                                index <= feedback.rating
-                                                    ? "star"
-                                                    : "star"
-                                            }
-                                            size={16}
-                                            color={
-                                                index <= feedback.rating
-                                                    ? "#FFD700"
-                                                    : "#B0C4DE"
-                                            }
-                                        />
-                                    );
-                                })}
+                                <StarRating averageRating={averageRating} size = {16}/>
                             </View>
                             <Text style={{ fontSize: 18 , marginBottom: 10}}>
                                 {feedback.comment}

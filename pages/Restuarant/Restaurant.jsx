@@ -126,6 +126,10 @@ const Restaurant = ({ route, navigation }) => {
                 </Text>
             </View>
 
+            <Pressable style = {{marginLeft: 15}} onPress = {() => {navigation.navigate("RestaurantInfo", {restaurant: restaurant})}}>
+                <Text style = {{fontSize: 20, color:  "green"}}>Xem thông tin nhà hàng</Text>
+            </Pressable>
+
             <ScrollView style={{ marginTop: 30 , marginBottom: shoppingCart.length > 0 ? 75 : 0}}>
                 {foodsList.map((food, i ) => (
                     <FoodContainer key = {i} navigation={navigation} food = {food} shoppingCart={shoppingCart} incrementFoodCount={incrementFoodCount} decrementFoodCount={decrementFoodCount} getFoodCount = {getFoodCount}/>

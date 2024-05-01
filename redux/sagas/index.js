@@ -8,14 +8,6 @@ import { updatePushToken } from '../../api/userAPI';
 import { phoneNumberRequest } from '../actions/phoneNumber';
 
 
-const setUser = (user) => {
-    localStorage.setItem("user", JSON.stringify(user));
-}
-
-const updateUser = (userUpdated) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    localStorage.setItem("user", JSON.stringify({accessToken: user.accessToken, ...userUpdated}));
-}
 
 function* loginRequestSaga(action){
     try {    

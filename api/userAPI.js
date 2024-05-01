@@ -14,3 +14,7 @@ export const addBankPayment = payload => axios.post(`${URL}/add-bank-payment`, p
 export const updatePushToken = payload => axios.post(`${URL}/update-push-token`, payload)
 
 export const getFavouriteFoods = payload => axios.post(`${URL}/update-push-token`, payload)
+
+export const addUserPoint = payload => axios.post(`${URL}/add-user-point`, payload)
+
+export const removeUserPoint = payload => axios.post(`${URL}/remove-user-point`, payload)

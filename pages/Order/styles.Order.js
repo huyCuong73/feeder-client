@@ -371,5 +371,18 @@ export const styles = StyleSheet.create({
     },
     paymentMethodLabel: {
         fontSize: 20
-    }
+    },
+
+    checkbox: {
+        width: 30,
+        height: 30,
+        borderWidth: 1,
+        borderColor: "gray",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    checked: {
+        backgroundColor: "green",
+    },
+
 })

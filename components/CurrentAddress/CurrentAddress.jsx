@@ -8,7 +8,7 @@ const CurrentAddress = ({ navigation }) => {
     const currentPhoneNumber = useSelector((state) => state.phoneNumber);
 
     return (
-        <View style={{ marginHorizontal: 15, marginBottom: 20 }}>
+        <View style={{ paddingHorizontal: 15, paddingBottom: 10 , backgroundColor: "#cecccc"}}>
             <Text style={{ fontSize: 18 , marginLeft: 10, fontSize: 20, fontWeight: 700,}}>Giao đến: </Text>
             <View
                 style={{

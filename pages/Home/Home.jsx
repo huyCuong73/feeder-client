@@ -59,7 +59,6 @@ async function getNotificationToken() {
 export default function Home({ navigation }) {
     Location.setGoogleApiKey("AIzaSyB9jG7ROCL115gTV3Z1boznnkxN4lTM-wc");
     const dispatch = useDispatch();
-    const address = useSelector((state) => state.address);
 
     const [restaurantListOption, setRestaurantListOption] = useState(1);
     const [restaurants, setRestaurants] = useState([]);
@@ -69,25 +68,23 @@ export default function Home({ navigation }) {
     const [distance, setDistance] = useState(null);
     const [duration, setDuration] = useState(null);
 
-    const getDuration = (origin, destination) => {
+    // const getDuration = (origin, destination) => {
         
 
-        const originStr = `${origin.latitude},${origin.longitude}`;
-        const destinationStr = `${destination.latitude},${destination.longitude}`;
-        axios
-            .get(
-                `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originStr}&destinations=${destinationStr}&key=AIzaSyB9jG7ROCL115gTV3Z1boznnkxN4lTM-wc`
-            )
+    //     const originStr = `${origin.latitude},${origin.longitude}`;
+    //     const destinationStr = `${destination.latitude},${destination.longitude}`;
+    //     axios
+    //         .get(
+    //             `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originStr}&destinations=${destinationStr}&key=AIzaSyB9jG7ROCL115gTV3Z1boznnkxN4lTM-wc`
+    //         )
 
-            .then((res) => {
-                return (res.data.rows[0].elements[0].duration.text);
-            })
-            // .catch((error) => {
-            //     console.error(error);
-            // });
-    };
-
-
+    //         .then((res) => {
+    //             return (res.data.rows[0].elements[0].duration.text);
+    //         })
+    //         .catch((error) => {
+    //             console.error(error);
+    //         });
+    // };
     
     useEffect(() => {
         const getPermissions = async () => {
@@ -176,34 +173,6 @@ export default function Home({ navigation }) {
             </View>
 
             <View style={styles.container}>
-                {/* <View style={{ marginHorizontal: 15, marginBottom: 20 }}>
-                    <Text style={{ fontSize: 18 }}>Giao đến: </Text>
-                    <View
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Text style={{ fontSize: 18 }}>Địa chỉ:</Text>
-                        <Pressable
-                            style={{
-                                display: "flex",
-                                flex: 1,
-                                flexDirection: "row",
-                                marginHorizontal: 10,
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                            onPress={() => navigation.navigate("Address")}
-                        >
-                            <Text style={{ fontSize: 18 }}>
-                                {address && address}
-                            </Text>
-                            <Image source={forward}></Image>
-                        </Pressable>
-                    </View>
-                </View> */}
 
                 <CurrentAddress navigation={navigation}/>
 

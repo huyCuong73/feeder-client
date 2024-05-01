@@ -112,7 +112,7 @@ export default function Home({ navigation }) {
             });
     };
 
-    console.log(updating);
+ 
 
 
 
@@ -190,7 +190,7 @@ export default function Home({ navigation }) {
                                                 user.phoneNumber
                                             )
                                         );
-                                        navigation.navigate("Home");
+                                        navigation.goBack();
                                     }}
                                     style={{
                                         width: "100%",
@@ -253,7 +253,7 @@ export default function Home({ navigation }) {
                                     address.phoneNumber
                                 )
                             );
-                            navigation.navigate("Home");
+                            navigation.goBack();
                         }
                     }>
                         <View style = {{backgroundColor: "#dadada", padding: 10, display: "flex", flexDirection:"row", }}>
@@ -277,7 +277,7 @@ export default function Home({ navigation }) {
                                         addressNo: address.addressNo
                                     })
                                     .then(newUser => {
-                                        console.log(newUser.data);
+                                        
                                         dispatch(updateAddress(newUser.data));
                     
                                     })
@@ -303,7 +303,8 @@ export default function Home({ navigation }) {
                             {
                                 phoneNumberChanging !== i
                                 ?
-                                <Pressable style = {{display: "flex", flexDirection: "row", alignItems: "center"}} onPress = {() => {
+                                <Pressable style = {{display: "flex", flexDirection: "row", alignItems: "center"}} 
+                                onPress = {() => {
                                     setPhoneNumberChanging(i)
                                     setInputPhoneNumber("")
                                 }}>
@@ -319,6 +320,7 @@ export default function Home({ navigation }) {
                                     </Pressable>
                                     <Pressable onPress = {() => {
                                         setUpdating(true)
+
                                         updatePhoneNumberAddress({userId: user._id, addressNo: address.addressNo, phoneNumber: inputPhoneNumber})
                                         .then(newUser => {
                                             dispatch(updateAddress(newUser.data));

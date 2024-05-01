@@ -36,11 +36,17 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { getDistance } from "geolib";
 
 import { auto } from "../../data";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatVND, formatDate, getFoodInShoppingCart } from "../../helper";
 import { addNewOrder } from "../../api/orderAPI";
+import CurrentAddress from "../../components/CurrentAddress/CurrentAddress";
+import { addUserPoint, removeUserPoint } from "../../api/userAPI";
+import { updateUserPoint } from "../../redux/actions/user";
+import { addUserUsingVoucher } from "../../api/voucherAPI";
 
 export default function Order({ navigation, route }) {
+
+    const dispatch = useDispatch()
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
             shouldShowAlert: true,
@@ -51,13 +57,12 @@ export default function Order({ navigation, route }) {
 
     const user = useSelector((state) => state.user.user);
     const currentAddress = useSelector((state) => state.address);
-    const phoneNumber = useSelector(state => state.phoneNumber)
+    const phoneNumber = useSelector((state) => state.phoneNumber);
     const shippingFee = 15000;
-    const foodsList = route.params.foodsList
-    const shoppingCart = route.params.shoppingCart
+    const foodsList = route.params.foodsList;
+    const shoppingCart = route.params.shoppingCart;
 
-
-    const foodsInCart = getFoodInShoppingCart(foodsList, shoppingCart)
+    const foodsInCart = getFoodInShoppingCart(foodsList, shoppingCart);
 
     const insets = useSafeAreaInsets();
     const [modalVisible, setModalVisible] = useState(false);
@@ -68,6 +73,7 @@ export default function Order({ navigation, route }) {
     const [showPicker, setShowPicker] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [dayPicked, setDayPicked] = useState([]);
+    const [isPointUsed, setIsPointUsed] = useState(false);
 
     const [paymentMethod, setPaymentMethod] = useState(2);
 
@@ -96,52 +102,36 @@ export default function Order({ navigation, route }) {
     };
 
     const getFoodsInCartId = () => {
-
-        const foodsInCartId = []
+        const foodsInCartId = [];
         shoppingCart.forEach((food) => {
-            foodsInCartId.push(food.foodId)
-        })
+            foodsInCartId.push(food.foodId);
+        });
 
-        return foodsInCartId
-    }
+        return foodsInCartId;
+    };
 
     const getFoodCount = (foodId) => {
-        const foods = shoppingCart
+        const foods = shoppingCart;
 
-        const foodInCart = foods.filter(food => food.foodId === foodId)
-        return foodInCart[0].foodCount
-    }
+        const foodInCart = foods.filter((food) => food.foodId === foodId);
+        return foodInCart[0].foodCount;
+    };
 
     const getTotalCost = () => {
-        let cost = 0
-        const foodsInCartId = []
+        let cost = 0;
+        const foodsInCartId = [];
 
         shoppingCart.forEach((food) => {
-            foodsInCartId.push(food.foodId)
-        })
+            foodsInCartId.push(food.foodId);
+        });
 
-        foodsList.forEach(food => {
-            if(foodsInCartId.includes(food._id)){
-                cost += food.price * getFoodCount(food._id)
+        foodsList.forEach((food) => {
+            if (foodsInCartId.includes(food._id)) {
+                cost += food.price * getFoodCount(food._id);
             }
-        })
-        return cost
-    }
-
-
-    const getDateTime = () => {
-        const combinedDateTime = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            time.getHours(),
-            time.getMinutes(),
-            time.getSeconds()
-          );
-    
-       
-        return combinedDateTime
-    }
+        });
+        return cost;
+    };
 
     return (
         <>
@@ -154,213 +144,199 @@ export default function Order({ navigation, route }) {
                     paddingBottom: insets.bottom,
                 }}
             >
-                <ScrollView>
-                    <Pressable
-                        style={styles.header}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Image
-                            source={backward}
-                            style={{ marginLeft: 20, width: 30 }}
-                        ></Image>
-                        <Text style={styles.confirmLabel}>
-                            Xác nhận đơn hàng
-                        </Text>
-                    </Pressable>
+                <Pressable
+                    style={styles.header}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Image
+                        source={backward}
+                        style={{ marginLeft: 20, width: 30 }}
+                    ></Image>
+                    <Text style={styles.confirmLabel}>Xác nhận đơn hàng</Text>
+                </Pressable>
 
-                    <View style={styles.section}>
-                        <View style={styles.iconLocationContainer}>
-                            <Image
-                                style={styles.navIcon}
-                                source={location}
-                            ></Image>
-                        </View>
-                        <View style={styles.location}>
-                            <Text style={styles.sectionTitle}>
-                                Địa chỉ giao hàng
-                            </Text>
-                            <Text style={styles.sectionContent}>
-                                Nguyễn Văn A | 0123456789
-                            </Text>
-                            <Text style={styles.sectionContent}>
-                                nhà 12A12, Ng.92D Trần Phú, Mỗ Lao, Hà Đông, Hà
-                                Nội
-                            </Text>
-                        </View>
+                <CurrentAddress navigation={navigation} />
 
-                        <View style={styles.iconForwardContainer}>
-                            <Image
-                                style={styles.navIcon}
-                                source={forward}
-                            ></Image>
+                <Modal
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <OptionButton
+                                option="Đặt ngay"
+                                onPress={() => {
+                                    setOption(1);
+                                    setModalVisible(false);
+                                }}
+                            />
+
+                            <OptionButton
+                                option="Một lần"
+                                onPress={() => {
+                                    setOption(2);
+                                    setModalVisible(false);
+                                }}
+                            />
+
+                            <OptionButton
+                                option="Định kỳ"
+                                onPress={() => {
+                                    setOption(3);
+                                    setModalVisible(false);
+                                }}
+                            />
                         </View>
                     </View>
-                    
-                    <Modal
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(!modalVisible);
-                        }}
-                    >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <OptionButton
-                                    option="Đặt ngay"
-                                    onPress={() => {
-                                        setOption(1);
-                                        setModalVisible(false);
+                </Modal>
+
+                <Pressable
+                    style={styles.button}
+                    onPress={() => setModalVisible(true)}
+                >
+                    <Image style={styles.buttonIcon} source={schedule}></Image>
+
+                    <Text style={styles.buttonText}>
+                        {option === 1 && "Đặt ngay"}
+                        {option === 2 && "Một lần"}
+                        {option === 3 && "Định kỳ"}
+                    </Text>
+                    <Image style={styles.buttonIcon} source={expand}></Image>
+                </Pressable>
+
+                <View style={{ marginHorizontal: 20 }}>
+                    {foodsInCart.map((food, i) => (
+                        <View
+                            key={i}
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                marginBottom: 15,
+                            }}
+                        >
+                            <Image
+                                style={{ width: 50, height: 50 }}
+                                source={{ uri: food.imgsrc }}
+                            />
+
+                            <View
+                                style={{
+                                    padding: 10,
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    flexDirection: "row",
+                                    flex: 1,
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
                                     }}
-                                />
-
-                                <OptionButton
-                                    option="Một lần"
-                                    onPress={() => {
-                                        setOption(2);
-                                        setModalVisible(false);
-                                    }}
-                                />
-
-                                <OptionButton
-                                    option="Định kỳ"
-                                    onPress={() => {
-                                        setOption(3);
-                                        setModalVisible(false);
-                                    }}
-                                />
-                            </View>
-                        </View>
-                    </Modal>
-
-
-                    <Pressable
-                        style={styles.button}
-                        onPress={() => setModalVisible(true)}
-                    >
-                        <Image
-                            style={styles.buttonIcon}
-                            source={schedule}
-                        ></Image>
-
-                        <Text style={styles.buttonText}>
-                            {option === 1 && "Đặt ngay"}
-                            {option === 2 && "Một lần"}
-                            {option === 3 && "Định kỳ"}
-                        </Text>
-                        <Image
-                            style={styles.buttonIcon}
-                            source={expand}
-                        ></Image>
-                    </Pressable>
-                    
-
-                    <View style = {{marginHorizontal: 20}}>
-
-                        {
-                            foodsInCart.map((food, i) => 
-                                <View key = {i} style = {{display: "flex", flexDirection: "row", marginBottom: 15}}>
-                                    <Image style = {{width:50, height:50}} source = {{uri: food.imgsrc}}/>
-
-                                    <View style = {{padding: 10, display: "flex", justifyContent: "space-between", flexDirection: "row", flex: 1}}>
-                                        <View style = {{display: "flex", flexDirection: "row"}}>
-                                            <Text style = {{fontWeight: 700, fontSize: 18}}>
-                                                {`${getFoodCount(food._id)} X `}
-                                            </Text>
-                                            <Text style = {{ fontSize: 18}}>
-                                                {food.name}
-                                            </Text>
-                                        </View>
-                                        <Text style = {{fontSize: 20, fontWeight: 700}}>
-                                            {formatVND(getFoodCount(food._id) * food.price)}
-                                        </Text>
-                                    </View>
-                                </View>
-                            )
-                        }
-                    </View>
-
-
-                    {option !== 1 && (
-                        <View style={styles.shippingContainer}>
-                            <View style={styles.shippingLabel}>
-                                <Image
-                                    style={styles.shippingIcon}
-                                    source={shipping}
-                                ></Image>
-
-                                <Text style={styles.scheduleLabel}>
-                                    Thời gian giao hàng
-                                </Text>
-                            </View>
-
-                            <View style={styles.setShippingTime}>
-                                <Text style={styles.shippingTime}>
-                                    {time &&
-                                        time.getHours() +
-                                            ":" +
-                                            ("0" + time.getMinutes()).slice(-2)}
-                                </Text>
-                                <Pressable onPress={() => setShowPicker(true)}>
-                                    <Text style={styles.timeButton}>
-                                        Thay đổi
-                                    </Text>
-                                </Pressable>
-                            </View>
-
-                            {option == 2 && (
-                                <Pressable
-                                    style={styles.setShippingDate}
-                                    onPress={() => setShowDatePicker(true)}
                                 >
-                                    <Image
-                                        style={styles.dateButton}
-                                        source={calendar}
-                                    ></Image>
-                                    <Text style={styles.shippingDate}>
-                                        {date && formatDate(date)}
+                                    <Text
+                                        style={{
+                                            fontWeight: 700,
+                                            fontSize: 18,
+                                        }}
+                                    >
+                                        {`${getFoodCount(food._id)} X `}
                                     </Text>
-                                </Pressable>
-                            )}
-
-                            {option == 3 && (
-                                <View style={styles.dayPicker}>
-                                    {days.map((day, i) => (
-                                        <Pressable
-                                            style={
-                                                dayPicked.includes(i + 1)
-                                                    ? styles.dayPicked
-                                                    : styles.day
-                                            }
-                                            onPress={() => {
-                                                if (dayPicked.includes(i + 1)) {
-                                                    const newDayPicked =
-                                                        dayPicked.filter(
-                                                            function (ele) {
-                                                                return (
-                                                                    ele != i + 1
-                                                                );
-                                                            }
-                                                        );
-
-                                                    setDayPicked(newDayPicked);
-                                                } else {
-                                                    setDayPicked([
-                                                        ...dayPicked,
-                                                        i + 1,
-                                                    ]);
-                                                }
-                                            }}
-                                        >
-                                            <Text style={styles.dayLabel}>
-                                                {day}
-                                            </Text>
-                                        </Pressable>
-                                    ))}
+                                    <Text style={{ fontSize: 18 }}>
+                                        {food.name}
+                                    </Text>
                                 </View>
-                            )}
+                                <Text style={{ fontSize: 20, fontWeight: 700 }}>
+                                    {formatVND(
+                                        getFoodCount(food._id) * food.price
+                                    )}
+                                </Text>
+                            </View>
                         </View>
-                    )}
+                    ))}
+                </View>
 
+                {option !== 1 && (
+                    <View style={styles.shippingContainer}>
+                        <View style={styles.shippingLabel}>
+                            <Image
+                                style={styles.shippingIcon}
+                                source={shipping}
+                            ></Image>
+
+                            <Text style={styles.scheduleLabel}>
+                                Thời gian giao hàng
+                            </Text>
+                        </View>
+
+                        <View style={styles.setShippingTime}>
+                            <Text style={styles.shippingTime}>
+                                {time &&
+                                    time.getHours() +
+                                        ":" +
+                                        ("0" + time.getMinutes()).slice(-2)}
+                            </Text>
+                            <Pressable onPress={() => setShowPicker(true)}>
+                                <Text style={styles.timeButton}>Thay đổi</Text>
+                            </Pressable>
+                        </View>
+
+                        {option == 2 && (
+                            <Pressable
+                                style={styles.setShippingDate}
+                                onPress={() => setShowDatePicker(true)}
+                            >
+                                <Image
+                                    style={styles.dateButton}
+                                    source={calendar}
+                                ></Image>
+                                <Text style={styles.shippingDate}>
+                                    {date && formatDate(date)}
+                                </Text>
+                            </Pressable>
+                        )}
+
+                        {option == 3 && (
+                            <View style={styles.dayPicker}>
+                                {days.map((day, i) => (
+                                    <Pressable
+                                        style={
+                                            dayPicked.includes(i + 1)
+                                                ? styles.dayPicked
+                                                : styles.day
+                                        }
+                                        onPress={() => {
+                                            if (dayPicked.includes(i + 1)) {
+                                                const newDayPicked =
+                                                    dayPicked.filter(
+                                                        function (ele) {
+                                                            return ele != i + 1;
+                                                        }
+                                                    );
+
+                                                setDayPicked(newDayPicked);
+                                            } else {
+                                                setDayPicked([
+                                                    ...dayPicked,
+                                                    i + 1,
+                                                ]);
+                                            }
+                                        }}
+                                    >
+                                        <Text style={styles.dayLabel}>
+                                            {day}
+                                        </Text>
+                                    </Pressable>
+                                ))}
+                            </View>
+                        )}
+                    </View>
+                )}
+
+                <ScrollView style={{ flex: 1, marginBottom: 180 }}>
                     {option !== 3 && (
                         <View style={styles.bill}>
                             <View style={styles.billDetail}>
@@ -387,18 +363,37 @@ export default function Order({ navigation, route }) {
                                     </Text>
                                 </View>
                             )}
-                            <View style={styles.billDetail}>
+
+                            {isPointUsed && (
+                                <View style={styles.billDetail}>
+                                    <Text style={styles.detailText}>
+                                        Điểm thưởng
+                                    </Text>
+                                    <Text style={styles.detailText}>
+                                        {`-${formatVND(user.point)}`}
+                                    </Text>
+                                </View>
+                            )}
+
+                            <View
+                                style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                }}
+                            >
                                 <Text style={styles.totalPrice}>Tổng cộng</Text>
                                 <Text style={styles.totalPrice}>
                                     {route.params.voucher
                                         ? formatVND(
-                                            getTotalCost() +
+                                              getTotalCost() +
                                                   shippingFee -
-                                                  route.params.voucher.discount
+                                                  route.params.voucher.discount -
+                                                  (isPointUsed ? user.point : 0)
                                           )
                                         : formatVND(
-                                            getTotalCost() +
-                                                  shippingFee
+                                              getTotalCost() + shippingFee - (isPointUsed ? user.point : 0)
                                           )}
                                 </Text>
                             </View>
@@ -412,7 +407,7 @@ export default function Order({ navigation, route }) {
                                 justifyContent: "space-between",
                                 flexDirection: "row",
                                 alignItems: "center",
-                                padding: 30,
+                                padding: 20,
                                 backgroundColor: "#bababa",
                             }}
                             onPress={() =>
@@ -429,22 +424,57 @@ export default function Order({ navigation, route }) {
                         </Pressable>
                     )}
 
-                    {showPicker && (
-                        <DateTimePicker
-                            mode="time"
-                            is24Hour={true}
-                            value={time || new Date()}
-                            onChange={handleTimeChange}
-                        />
-                    )}
-                    {showDatePicker && (
-                        <DateTimePicker
-                            mode="date"
-                            value={date || new Date()}
-                            onChange={handleDateChange}
-                        />
-                    )}
+                   { user.point > 0 && 
+                        <View
+                            style={{
+                                margin: 20,
+                                display: "flex",
+                                justifyContent: "space-between",
+                                flexDirection: "row",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text style={{ fontSize: 20 }}>
+                                {"Sử dụng: " + user.point + " điểm"}
+                            </Text>
+                            <View>
+                                <Pressable
+                                    style={[
+                                        styles.checkbox,
+                                        isPointUsed && styles.checked,
+                                    ]}
+                                    onPress={() => {
+                                        setIsPointUsed(!isPointUsed);
+                                    }}
+                                >
+                                    {isPointUsed && (
+                                        <Text
+                                            style={{ fontSize: 20, color: "white" }}
+                                        >
+                                            ✓
+                                        </Text>
+                                    )}
+                                </Pressable>
+                            </View>
+                        </View>
+                    }
                 </ScrollView>
+
+                {showPicker && (
+                    <DateTimePicker
+                        mode="time"
+                        is24Hour={true}
+                        value={time || new Date()}
+                        onChange={handleTimeChange}
+                    />
+                )}
+                {showDatePicker && (
+                    <DateTimePicker
+                        mode="date"
+                        value={date || new Date()}
+                        onChange={handleDateChange}
+                    />
+                )}
 
                 <View style={styles.navbarContainer}>
                     <View style={styles.orderContainer}>
@@ -486,7 +516,6 @@ export default function Order({ navigation, route }) {
                             </View>
                         )}
 
-
                         <Pressable
                             style={styles.orderButton}
                             onPress={() => {
@@ -498,58 +527,63 @@ export default function Order({ navigation, route }) {
                                     }
 
                                     if (paymentMethod == 2) {
-                                        const createNewOrder = async () => {
-                                          
-                                                
-                                            await addNewOrder({
-                                                type:"immediate",
-                                                total: getTotalCost(),
-                                                paidStatus: false,
-                                                paymentMethod: "cash",
-                                                foods: getFoodsInCartId().map(id => ({
+                                            
+                                        addNewOrder({
+                                            type: "immediate",
+                                            total: getTotalCost(),
+                                            paidStatus: false,
+                                            paymentMethod: "cash",
+                                            foods: getFoodsInCartId().map(
+                                                (id) => ({
                                                     foodId: id,
-                                                    foodCount: getFoodCount(id)
-                                                })),
-                                                restaurantId: foodsList[0].restaurantId,
-                                                userId: user._id,
-                                                orderTime: new Date(),
-                                                orderTo: currentAddress,
-                                                voucher: route.params.voucher ? route.params.voucher._id : "",
-                                                phoneNumber
-                                            })
+                                                    foodCount:
+                                                        getFoodCount(id),
+                                                })
+                                            ),
+                                            restaurantId:
+                                                foodsList[0].restaurantId,
+                                            userId: user._id,
+                                            orderTime: new Date(),
+                                            orderTo: currentAddress,
+                                            voucher: route.params.voucher
+                                                ? route.params.voucher._id
+                                                : "",
+                                            phoneNumber,
+                                            point: user.point
+                                        })
                                             .then(() => {
-                                                navigation.navigate("ListOrders");
+                                                if(isPointUsed){
+                                                    removeUserPoint({userId: user._id})
+                                                        .then((res) => {
+                                                            navigation.navigate("ListOrders")
+                                                            dispatch(updateUserPoint(res.data))
+                                                        }
+                                                    )
+                                                        
+                                                } else {
+                                                    addUserPoint({userId: user._id})
+                                                        .then((res) => {
+                                                            navigation.navigate("ListOrders")
+                                                            dispatch(updateUserPoint(res.data))
+                                                    })   
+                                                }
+
                                             })
                                             .catch((err) => {
                                                 console.log(err);
-                                            })
-                                            
-                                            // await addUserUsingVoucher({voucherId: route.params.voucher._id, userId: user._id})
-                                        };
+                                            });
+                                        }
 
-                                        createNewOrder();
+                                        if(route.params.voucher){
+
+                                            addUserUsingVoucher({voucherId: route.params.voucher._id, userId: user._id})
+                                        }
+                                        
+
+                                        
                                     }
                                 }
-
-                                // if(option == 2){
-                                   
-                                //     addNewOrder({
-                                //         type: "once",
-                                //         total:
-                                //             foodCount *
-                                //             food.price +
-                                //             shippingFee,
-                                //         paidStatus: false,
-                                //         paymentMethod: "cash",
-                                //         foodId: food._id,
-                                //         userId: user._id,
-                                //         orderTime: formatDate(getDateTime()),
-                                //         orderTo: currentAddress,
-                                      
-                                //     });
-                               
-                                // }
-                            }}
+                            }
                         >
                             <Text style={styles.orderLabel}>Đặt hàng</Text>
                         </Pressable>
