@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     },
     option: {
         fontSize: 20,
-        width: "30%",
+        width: "45%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     },
 
     optionSelected: {
-        width: "30%",
+        width: "45%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

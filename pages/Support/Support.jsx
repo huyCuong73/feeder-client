@@ -1,25 +1,36 @@
-import React, { useState } from 'react'
-import {Text, View, Button,  Pressable, Image, Modal,SafeAreaView ,StatusBar, ScrollView } from "react-native";
+import React, { useEffect, useState } from 'react'
+import {Text, View, Button,  Pressable, Image, Modal ,StatusBar, ScrollView } from "react-native";
 import {styles} from "./styles.Support"
 import {
     SafeAreaProvider,
     useSafeAreaInsets,
+    SafeAreaView
   } from 'react-native-safe-area-context';
-import ticket from "../../assets/ticket.png"
+import ticketImage from "../../assets/ticket.png"
 import NavBar from '../../components/NavBar/NavBar';
+import { getUserTicket } from '../../api/ticketAPI';
+import { useSelector } from 'react-redux';
+import { formatDate } from '../../helper';
 
 export default function Support({navigation}) {
-    const insets = useSafeAreaInsets();
+
+    const user = useSelector(state => state.user.user)
     const [option, setOption] = useState(1)
+    const [tickets, setTickets]  = useState([])
 
 
+    useEffect(() => {
+        getUserTicket({userId: user._id})
+            .then(res => {
+                setTickets(res.data)
+            })
+    },[])
     return (
 
     <SafeAreaView             
         style={{
             flex: 1,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
+
     }}>
 
         <View style = {styles.navbarContainer}>
@@ -53,50 +64,35 @@ export default function Support({navigation}) {
                 </Pressable>
 
                 <Pressable style = {option === 2 ? styles.optionSelected : styles.option} onPress={() => setOption(2)}>
-                    <Text style = {styles.textOption}>Chưa xử lý</Text>
-                </Pressable>
-
-                <Pressable style = {option === 3 ? styles.optionSelected : styles.option} onPress={() => setOption(3)}>
                     <Text style = {styles.textOption}>Đã xử lý</Text>
                 </Pressable>
+
             </View>   
 
-            <View style = {{display: "flex", alignItems: "center", flexDirection: "row", backgroundColor: "#cfcfcf", padding: 10, marginBottom: 20}}>
-                <Image style = {{width: "10%"}} source={ticket}>
+            {
+                tickets.map((ticket, i) => 
+                    <View key = {i} style = {{display: "flex", alignItems: "center", flexDirection: "row", backgroundColor: "#cfcfcf", padding: 10, marginBottom: 20, zIndex: 999}}>
 
-                </Image>
+                        <View style = {{width: 40, height: 40, zIndex: 999}}>
+                            <Image style = {{width: 40, height: 40}} source={ticketImage}/>
+                        </View>
 
-                <View style = {{width: "70%", marginHorizontal: 15, fontSize: 18, height: 40,}}>
-                    <Text style = {{fontSize:18, marginBottom: 5}}>
-                        Lorem ipsum dolor sit amet
-                    </Text>
-                    <Text>
-                    20:20 20/20/2020
-                    </Text>
-                </View>
+           
+                       
+                        <View style = {{flex: 1, marginHorizontal: 15, fontSize: 18, height: 40,}}>
+                            <Text style = {{fontSize:18, marginBottom: 5}}>
+                                {ticket.header}
+                            </Text>
+                            <Text>
+                                {formatDate(new Date(ticket.createdAt))}
+                            </Text>
+                        </View>
 
-                <Text style = {{flex : 1}}>
-                    #12345
-                </Text>
-            </View>
-            <View style = {{display: "flex", alignItems: "center", flexDirection: "row", backgroundColor: "#cfcfcf", padding: 10}}>
-                <Image source={ticket}>
+                    </View>
+                )
+            }
 
-                </Image>
 
-                <View style = {{width: "80%", marginHorizontal: 15, fontSize: 18, height: 40,}}>
-                    <Text style = {{fontSize:18, marginBottom: 5}}>
-                        Lorem ipsum dolor sit amet
-                    </Text>
-                    <Text>
-                    20:20 20/20/2020
-                    </Text>
-                </View>
-
-                <Text>
-                    #12345
-                </Text>
-            </View>
         </View>
     </SafeAreaView>
     )

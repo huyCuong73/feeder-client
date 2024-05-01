@@ -90,7 +90,7 @@ const Shipper = () => {
                                         time: new Date(),
                                     })
                                         .then((res) => {
-                                            console.log(111111);
+                                       
                                             addNotification({
                                                 notification: {
                                                     userId: order.userId,
@@ -99,11 +99,12 @@ const Shipper = () => {
                                                     content: `Đơn hàng tại ${order.restaurantId.name} của bạn đã hoàn tất`
                                                 }
                                             })
-
-                                            socket.emit("orderCompleted", {
-                                                userId: order.userId,
-                                                orderId: order._id,
-                                            });
+                                                .then(() => {
+                                                    socket.emit("orderCompleted", {
+                                                        userId: order.userId,
+                                                        orderId: order._id,
+                                                    });
+                                                })
                                             setReload((pre) => pre + 1);
                                         })
                                         .catch((err) => console.log(err));

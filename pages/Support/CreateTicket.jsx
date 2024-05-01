@@ -7,60 +7,33 @@ import {
     Pressable,
     Image,
     Modal,
-    SafeAreaView,
     StatusBar,
     ScrollView,
 } from "react-native";
 import { styles } from "./styles.Support";
 import {
+    SafeAreaView,
     SafeAreaProvider,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 import expand from "../../assets/expand.png";
 import * as ImagePicker from 'expo-image-picker';
+import { createNewTicket } from "../../api/ticketAPI";
+import { useSelector } from "react-redux";
 
 export default function CreateTicket({navigation}) {
-    const insets = useSafeAreaInsets();
-    const [value, setValue] = useState("");
+
+    const user = useSelector(state => state.user.user)
+    const [orderId, setOrderId] = useState("");
     const [header, setHeader] = useState("");
     const [content, setContent] = useState("");
 
     const [classification, setClassification] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [image, setImage] = useState(null);
-    console.log('====================================');
-    console.log(image);
-    console.log('====================================');
-    useEffect(() => {
-        (async () => {
-            if (Platform.OS !== "web") {
-                const { status } =
-                    await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== "granted") {
-                    alert(
-                        "Sorry, we need camera roll permissions to make this work!"
-                    );
-                }
-            }
-        })();
-    }, []);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
 
-        console.log(result);
-
-        if (!result.cancelled) {
-            setImage(result.uri);
-        }
-    };
 
     const OptionButton = ({ option, onPress }) => (
         <Pressable style={styles.optionButton} onPress={onPress}>
@@ -73,96 +46,86 @@ export default function CreateTicket({navigation}) {
     return (
         <SafeAreaView
             style={{
-                margin: 10,
+     
                 flex: 1,
-                paddingTop: insets.top,
-                paddingBottom: insets.bottom,
+
             }}
         >
-            <View style={styles.headerContainer}>
-                <View style={styles.header}>
-                    <Text style={styles.headerLabel}>PHÂN LOẠI</Text>
+            <View style = {{margin: 10}}>
 
-                    <Pressable
-                        style={styles.headerDetail}
-                        onPress={() => setModalVisible(true)}
-                    >
-                        <Text styles={styles.headerDetailText}>
-                            {classification}
-                        </Text>
-                        <Image source={expand}></Image>
-                    </Pressable>
+                <View style={styles.headerContainer}>
+                    <View style={styles.header}>
+                        <Text style={styles.headerLabel}>PHÂN LOẠI</Text>
+
+                        <Pressable
+                            style={styles.headerDetail}
+                            onPress={() => setModalVisible(true)}
+                        >
+                            <Text styles={styles.headerDetailText}>
+                                {classification}
+                            </Text>
+                            <Image source={expand}></Image>
+                        </Pressable>
+                    </View>
+                    <View style={styles.header}>
+                        <Text style={styles.headerLabel}>MÃ ĐƠN HÀNG</Text>
+
+                        <Pressable style={styles.headerDetail}>
+                            <TextInput
+                                value = {orderId}
+                                editable
+                                onChangeText={(value) => setOrderId(value)}
+                                style={{ flex: 1 }}
+                            />
+
+                        
+                        </Pressable>
+                    </View>
                 </View>
-                <View style={styles.header}>
-                    <Text style={styles.headerLabel}>MÃ ĐƠN HÀNG</Text>
 
-                    <Pressable style={styles.headerDetail}>
-                        <TextInput
-                            editable
-                            onChangeText={(value) => setValue(value)}
-                            style={{ flex: 1 }}
-                        />
-
-                        <Image source={expand}></Image>
-                    </Pressable>
-                </View>
-            </View>
-
-            <TextInput
-                placeholder="Tiêu đề..."
-                value={header}
-                onChangeText={(value) => setHeader(value)}
-                style={{
-                    fontSize: 26,
-                    marginTop: 20,
-                }}
-            />
-
-            <View style = {{height: 600}}>
                 <TextInput
-                    placeholder="Nội dung..."
-                    value={content}
-                    onChangeText={(value) => setContent(value)}
+                    placeholder="Tiêu đề..."
+                    value={header}
+                    onChangeText={(value) => setHeader(value)}
                     style={{
-                        fontSize: 20,
+                        fontSize: 26,
                         marginTop: 20,
-
                     }}
                 />
-            </View>
 
-            <View style={styles.container}>
-                <Pressable
-                    onPress={pickImage}
+                <View style = {{height: 600}}>
+                    <TextInput
+                        placeholder="Nội dung..."
+                        value={content}
+                        onChangeText={(value) => setContent(value)}
+                        style={{
+                            fontSize: 20,
+                            marginTop: 20,
 
-                    style = {{
-                        backgroundColor: "green",
-                        width: 120,
-                        height: 50,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
-                >
-                    <Text style = {{ color : 'white', fontSize: 20, fontWeight: "bold" }}>
-                        Thêm ảnh
-                    </Text>
-                </Pressable>
-                {image && (
-                    <Image
-                        source={{ uri: image }}
-                        style={{ width: 200, height: 200 }}
+                        }}
                     />
-                )}
+                </View>
+
+
+
+
             </View>
-
-
-            <View style = {styles.navbarContainer}>
+            <View style = {{position: "absolute", bottom: 0, left: 0, width: "100%"}}>
                 <View style = {styles.orderContainer}>
                     <Pressable style = {styles.orderButton} onPress={() => {
-                            navigation.navigate("Support")
+                            createNewTicket({
+                                userId: user._id,
+                                header: header,
+                                body: content,
+                                orderId: orderId,
+                                type: classification
+                            })
+                                .then(res => {
+                                    console.log(res.data)
+                                    navigation.navigate("Support")
+                                })
 
-                            }
+                        }
                         
                         }>
                         <Text style = {styles.orderLabel}>
@@ -184,7 +147,7 @@ export default function CreateTicket({navigation}) {
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <OptionButton
-                            option="Không nhân được hàng"
+                            option="Không nhận được hàng"
                             onPress={() => {
                                 setClassification("Không nhân được hàng");
                                 setModalVisible(false);
@@ -192,9 +155,9 @@ export default function CreateTicket({navigation}) {
                         />
 
                         <OptionButton
-                            option="Không thanh toán được"
+                            option="Hàng không giống mô tả"
                             onPress={() => {
-                                setClassification("Không thanh toán được");
+                                setClassification("Hàng không giống mô tả");
                                 setModalVisible(false);
                             }}
                         />

@@ -28,6 +28,15 @@ const authReducer = (state = INIT_STATE.user, action) => {
                 error: action.payload,
             };
 
+        case "LOGOUT":
+            return {
+                isLoading:false,
+                accessToken: null,
+                type: "",
+                user: {},
+                err:null
+            };
+
         case "UPDATE_ADDRESS":
             return {
                 ...state,

@@ -43,6 +43,9 @@ import Shipper from "./pages/Shipper/Shipper";
 import { Alert } from 'react-native';
 import FoodReview from "./pages/FoodReview/FoodReview";
 import RestaurantInfo from "./pages/RestuarantInfo/RestaurantInfo";
+import HelpCenter from "./pages/HelpCenter/HelpCenter";
+
+
 const showAlert = (id) => {
     Alert.alert(
       "Alert Title",
@@ -50,18 +53,15 @@ const showAlert = (id) => {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
+          onPress: () => console.log("Cancel"),
           style: "cancel"
         },
-        { text: "OK", onPress: () => console.log("OK Pressed") }
+        { text: "OK", onPress: () => console.log("OK") }
       ],
       { cancelable: true }
     );
   }
   
-
-
-
 
 
 
@@ -252,9 +252,28 @@ export default function Index() {
                             options={{ headerShown: false }}
                         />
                     </Stack.Navigator>
-                ) : (
-                    <Shipper></Shipper>
-                )}
+                ) 
+                : 
+                
+                (
+                    user.type === "shipper"
+                    ?
+                    (
+                        <Shipper></Shipper>
+                    )
+                    :
+                    (   
+                        <Stack.Navigator>
+                            <Stack.Screen
+                                name="HelpCenter"
+                                component={HelpCenter}
+                                options={{ headerShown: true }}
+                            />
+                        </Stack.Navigator>
+                       
+                    )
+                )
+            }
             </NavigationContainer>
         </SafeAreaProvider>
     );

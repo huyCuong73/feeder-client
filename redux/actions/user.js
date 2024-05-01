@@ -11,6 +11,10 @@ export const loginFailure = (err) => ({
     payload:err,
 });
 
+export const logout = () => ({
+    type: "LOGOUT",
+});
+
 
 export const updateAddress = (user) => ({
     type: "UPDATE_ADDRESS",
