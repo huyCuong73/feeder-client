@@ -52,7 +52,7 @@ async function getNotificationToken() {
 
     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: '9b40e9a7-b21d-4647-b5b6-0bfc90e3bd1f' })
     const token = tokenData.data
-    console.log({token});
+
     return token
 }
 
@@ -60,8 +60,11 @@ export default function Home({ navigation }) {
     Location.setGoogleApiKey("AIzaSyB9jG7ROCL115gTV3Z1boznnkxN4lTM-wc");
     const dispatch = useDispatch();
 
+    const user = useSelector(state => state.user.user)
+ 
     const [restaurantListOption, setRestaurantListOption] = useState(1);
     const [restaurants, setRestaurants] = useState([]);
+    const [restaurantsList, setRestaurantsList] = useState([]);
     const [location, setLocation] = useState();
     const [reverseCode, setReverseCode] = useState();
 
@@ -112,18 +115,24 @@ export default function Home({ navigation }) {
     
     useEffect(() => {
         const findNearestRestaurants = async () => {
+
             const data = await getNearestRestaurants({
                 longitude: location.coords.longitude,
                 latitude: location.coords.latitude,
             });
 
             setRestaurants(data.data);
+            setRestaurantsList(data.data)
         };
 
-        const findTopSellingRestaurants = async () => {
-            const data = await getTopSellingResturants();
 
-            setRestaurants(data.data);
+
+
+        const findFavouriteRestaurants = async () => {
+            console.log(user)
+            const data = restaurants.filter(restaurant => user.favouriteRestaurants.includes(restaurant._id));
+            console.log(data)
+            setRestaurantsList(data);
         };
         const findHighestRatedRestaurants = async () => {
             const data = await getHighestRatedResturants();
@@ -134,9 +143,10 @@ export default function Home({ navigation }) {
         if (restaurantListOption === 1) {
             if (location) {
                 findNearestRestaurants();
+
             }
         } else if (restaurantListOption === 2) {
-            findTopSellingRestaurants();
+            findFavouriteRestaurants();
         } else {
             findHighestRatedRestaurants();
         }
@@ -203,7 +213,7 @@ export default function Home({ navigation }) {
                         style={restaurantListOption === 2 ? styles.optionWrapperSelected : styles.optionsWrapper}
                         onPress={() => setRestaurantListOption(2)}
                     >
-                        <Text style={restaurantListOption === 2 ? styles.optionSelected : styles.option}>Bán chạy</Text>
+                        <Text style={restaurantListOption === 2 ? styles.optionSelected : styles.option}>Yêu thích</Text>
                     </Pressable>
 
                     <Pressable
@@ -216,28 +226,14 @@ export default function Home({ navigation }) {
             </View>
 
             <View>
-                {/* <MapView
-                    style={{ alignSelf: "stretch", height: 200 }}
-                    region={{
-                        latitude: (origin.latitude + destination.latitude) / 2,
-                        longitude:
-                            (origin.longitude + destination.longitude) / 2,
-                        latitudeDelta:
-                            Math.abs(origin.latitude - destination.latitude) *
-                            2,
-                        longitudeDelta:
-                            Math.abs(origin.longitude - destination.longitude) *
-                            2,
-                    }}
-                /> */}
-                {/* <Text>Distance: {distance}</Text>
-                <Text>Duration: {duration}</Text> */}
+
             </View>
 
             <ScrollView style={{ marginHorizontal: 15 , marginBottom: 100}}>
                 {
-                    restaurants.map((restaurant, i) => 
+                    restaurantsList.map((restaurant, i) => 
                         <Pressable key = {i} style = {{ height: 150, backgroundColor: "#d2d2d2", marginBottom: 20, display: "flex", flexDirection: "row", padding: 10}} onPress={() => (navigation.navigate("Restaurant", {restaurant: restaurant}))}>
+
                             <Image style = {{width: 150, marginRight: 15}} source={{uri: restaurant.imgsrc}}></Image>
                             <View style = {{flex: 1}}>
                                 <Text style = {{fontSize: 20, flex: 1, fontWeight: 600, marginBottom: 20}}>

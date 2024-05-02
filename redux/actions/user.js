@@ -21,6 +21,11 @@ export const updateAddress = (user) => ({
     payload:user,
 });
 
+export const updateUser = (user) => ({
+    type: "UPDATE_USER",
+    payload:user,
+});
+
 export const updateUserPoint = (user) => ({
     type: "UPDATE_USER_POINT",
     payload:user,

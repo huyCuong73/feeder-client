@@ -37,53 +37,9 @@ const AddAddress = ({ navigation }) => {
             .then((response) => {
                 setSuggestions(response.data.predictions);
 
-                if (response.data.predictions.length !== 0) {
+            
                     setSuggestions(response.data.predictions);
-                } else {
-                    setSuggestions([
-                        { place_id: 1231, description: "dsadasd dsf dsf df" },
-                        {
-                            place_id: 12343,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12334,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12354,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12354,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12365,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12365,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12365,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12365,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 12365,
-                            description: "asd  asd dfas dsa asd",
-                        },
-                        {
-                            place_id: 432,
-                            description: " qer ef qw efgw grwe wefg",
-                        },
-                    ]);
-                }
+    
             })
             .catch((e) => {
                 console.log(e.response);

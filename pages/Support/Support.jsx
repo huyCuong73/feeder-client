@@ -12,12 +12,12 @@ import { getUserTicket } from '../../api/ticketAPI';
 import { useSelector } from 'react-redux';
 import { formatDate } from '../../helper';
 
-export default function Support({navigation}) {
-
+export default function Support({navigation, route}) {
     const user = useSelector(state => state.user.user)
     const [option, setOption] = useState(1)
     const [tickets, setTickets]  = useState([])
-
+    const [listTickets, setListTickets] = useState([])
+    
 
     useEffect(() => {
         getUserTicket({userId: user._id})
@@ -25,6 +25,18 @@ export default function Support({navigation}) {
                 setTickets(res.data)
             })
     },[])
+
+    useEffect(() => {
+        if(tickets.lenth !== 0){
+            if(option == 1){
+                setListTickets(tickets.filter(ticket => ticket.response === ""))
+            }else{
+                setListTickets(tickets.filter(ticket => ticket.response !== ""))
+            }
+        }
+    },[option, tickets])
+
+
     return (
 
     <SafeAreaView             
@@ -42,7 +54,7 @@ export default function Support({navigation}) {
             <View style = {{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                 <Text style = {{fontWeight: "bold", fontSize: 30}}>Hỗ Trợ</Text>
                 <Pressable style = {{
-                    width: 200,
+                    width: "45%",
                     height: 50, 
                     backgroundColor: "green",
                     display: "flex",
@@ -70,7 +82,7 @@ export default function Support({navigation}) {
             </View>   
 
             {
-                tickets.map((ticket, i) => 
+                listTickets.map((ticket, i) => 
                     <View key = {i} style = {{display: "flex", alignItems: "center", flexDirection: "row", backgroundColor: "#cfcfcf", padding: 10, marginBottom: 20, zIndex: 999}}>
 
                         <View style = {{width: 40, height: 40, zIndex: 999}}>

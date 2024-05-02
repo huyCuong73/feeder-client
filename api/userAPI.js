@@ -18,3 +18,7 @@ export const getFavouriteFoods = payload => axios.post(`${URL}/update-push-token
 export const addUserPoint = payload => axios.post(`${URL}/add-user-point`, payload)
 
 export const removeUserPoint = payload => axios.post(`${URL}/remove-user-point`, payload)
+
+export const addFavouriteRestaurant = payload => axios.post(`${URL}/add-favourite-restaurant`, payload)
+
+export const removeFavouriteRestaurant = payload => axios.post(`${URL}/remove-favourite-restaurant`, payload)

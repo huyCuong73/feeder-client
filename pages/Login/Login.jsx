@@ -26,52 +26,39 @@ export default function Login() {
     return (
         <SafeAreaView style={styles.container}>
             <TextInput
-                placeholder="Tiêu đề..."
+                style={styles.input}
+                onChangeText={setEmail}
                 value={email}
-                onChangeText={(value) => setEmail(value)}
-                style={{
-                    fontSize: 26,
-                    marginTop: 20,
-                }}
-            />     
+                placeholder="nhập email của bạn"
+                // keyboardType="email-address"
+            />
             <TextInput
-                placeholder="Tiêu đề..."
+                style={styles.input}
+                onChangeText={setPassword}
                 value={password}
-                onChangeText={(value) => setPassword(value)}
-                style={{
-                    fontSize: 26,
-                    marginTop: 20,
-                }}
-            />       
+                placeholder="nhập mật khẩu"
+                secureTextEntry
+            />  
 
             <Pressable style = {{
                 width: 200,
-                height: 100,
-                backgroundColor: "green"
+                height: 70,
+                
+                backgroundColor: "green",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20
             }}
             
                 onPress = {() => handleLogin({email, password})}
             >
-                <Text>
-                    Log in    
+                <Text style = {{color: "white", fontSize: 24}}>
+                    Đăng nhập
                 </Text>   
             </Pressable>  
 
-            <Pressable style = {{
-                width: 200,
-                height: 100,
-                backgroundColor: "green"
-            }}
-            
-                onPress = {() => {
-                    
-                    console.log("user:", user)
-                }}
-            >
-                <Text>
-                    Log in    
-                </Text>   
-            </Pressable> 
+
         </SafeAreaView>
     );
 }
@@ -79,31 +66,19 @@ export default function Login() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    timeDisplay: {
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 20,
-        elevation: 2,
-    },
-    timeText: {
-        fontSize: 32,
-        fontWeight: "bold",
-    },
-    buttonContainer: {
-        flexDirection: "row",
-        marginTop: 20,
-    },
-    button: {
-        backgroundColor: "#6200EE",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f7f7f7',
+      },
+      input: {
+        width: '80%',
+        height: 60,
+        marginVertical: 10,
+        borderWidth: 1,
+        borderColor: '#cccccc',
         padding: 10,
-        marginHorizontal: 10,
         borderRadius: 5,
-    },
-    buttonText: {
-        color: "#fff",
-        fontWeight: "bold",
-    },
+        backgroundColor: '#ffffff',
+        fontSize: 20
+      },
 });

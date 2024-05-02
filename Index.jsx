@@ -44,12 +44,14 @@ import { Alert } from 'react-native';
 import FoodReview from "./pages/FoodReview/FoodReview";
 import RestaurantInfo from "./pages/RestuarantInfo/RestaurantInfo";
 import HelpCenter from "./pages/HelpCenter/HelpCenter";
+import TicketResponse from "./pages/HelpCenter/TicketResponse";
+import FavouriteRestaurant from "./pages/FavouriteRestaurant/FavouriteRestaurant";
 
 
 const showAlert = (id) => {
     Alert.alert(
       "Alert Title",
-      "Đơn hàng" + id +  "của bạn đã được xác nhận bới shipper",
+      "Đơn hàng " + id + " của bạn đã được xác nhận bới shipper",
       [
         {
           text: "Cancel",
@@ -251,6 +253,11 @@ export default function Index() {
                             component={CreateTicket}
                             options={{ headerShown: false }}
                         />
+                            <Stack.Screen
+                            name="FavouriteRestaurant"
+                            component={FavouriteRestaurant}
+                            options={{ headerShown: false }}
+                        />
                     </Stack.Navigator>
                 ) 
                 : 
@@ -267,6 +274,11 @@ export default function Index() {
                             <Stack.Screen
                                 name="HelpCenter"
                                 component={HelpCenter}
+                                options={{ headerShown: true }}
+                            />
+                            <Stack.Screen
+                                name="TicketResponse"
+                                component={TicketResponse}
                                 options={{ headerShown: true }}
                             />
                         </Stack.Navigator>

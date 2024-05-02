@@ -19,8 +19,18 @@ import minusBox from "../../assets/minus-box.png";
 import MapView from "react-native-maps";
 import Cart from "../../components/Cart/Cart";
 import FoodContainer from "../../components/FoodContainer/FoodContainer";
+import { useDispatch, useSelector } from "react-redux";
+
+import heart from "../../assets/heart.png"
+import heartFill from "../../assets/heart-fill.png"
+import { addFavouriteRestaurant, removeFavouriteRestaurant } from "../../api/userAPI";
+import { updateUser } from "../../redux/actions/user";
+
 
 const Restaurant = ({ route, navigation }) => {
+    const user = useSelector(state => state.user.user)
+
+    const dispatch = useDispatch()
     const restaurant = route.params.restaurant;
     const [foodsList, setFoodsList] = useState([]);
     const [shoppingCart, setShoppingCart] = useState([]);
@@ -124,6 +134,28 @@ const Restaurant = ({ route, navigation }) => {
                 <Text style={{ fontSize: 30, fontWeight: 700 }}>
                     {restaurant.name}
                 </Text>
+
+                {
+                    (!user.favouriteRestaurants.includes(restaurant._id)) 
+                    ?
+                    <Pressable style = {{position: "absolute", top :15, right: 10}} onPress = {() => {
+                        addFavouriteRestaurant({userId: user._id, restaurantId: restaurant._id})
+                        .then(res => {
+                            dispatch(updateUser(res.data))
+                        })
+                    }}> 
+                        <Image source = {heart}></Image>
+                    </Pressable>
+                    :
+                    <Pressable style = {{position: "absolute", top :15, right: 10}} onPress = {() => {
+                        removeFavouriteRestaurant({userId: user._id, restaurantId: restaurant._id})
+                        .then(res => {
+                            dispatch(updateUser(res.data))
+                        })
+                    }}> 
+                        <Image source = {heartFill}></Image>
+                    </Pressable>
+                }
             </View>
 
             <Pressable style = {{marginLeft: 15}} onPress = {() => {navigation.navigate("RestaurantInfo", {restaurant: restaurant})}}>

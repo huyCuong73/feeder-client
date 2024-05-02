@@ -31,7 +31,7 @@ export default function NavBar({navigation}) {
                 <Text style = {styles.iconLabel}>Đơn hàng</Text>
             </TouchableOpacity >
 
-            <TouchableOpacity  style = {styles.iconContainer} onPress={() => navigation.navigate("Favourites")}>
+            <TouchableOpacity  style = {styles.iconContainer} onPress={() => navigation.navigate("FavouriteRestaurant")}>
                 <Image 
                     style = {styles.navIcon} 
                     source={require('../../assets/nav/favourite.png')}
@@ -51,11 +51,11 @@ export default function NavBar({navigation}) {
             <TouchableOpacity  style = {styles.iconContainer} onPress={() => {navigation.navigate("Profile")}}>
                 <Image 
                     style = {styles.navIcon} 
-                    source={require('../../assets/support.png')}
+                    source={person}
                     
                 
                 ></Image>  
-                <Text style = {styles.iconLabel}>Hỗ trợ</Text>
+                <Text style = {styles.iconLabel}>Hồ sơ</Text>
             </TouchableOpacity >
 
  

@@ -121,8 +121,8 @@ export default function CreateTicket({navigation}) {
                                 type: classification
                             })
                                 .then(res => {
-                                    console.log(res.data)
-                                    navigation.navigate("Support")
+                                    
+                                    navigation.navigate("Home", {reload: 1})
                                 })
 
                         }
